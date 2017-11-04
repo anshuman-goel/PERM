@@ -1,0 +1,17 @@
+################################################################################
+
+Group info:
+agoel5 Anshuman Goel
+kgondha Kaustubh G Gondhalekar
+ndas Neha Das
+
+################################################################################
+
+
+What data structures did you have to place in persistent memory?
+We have placed the following data structures in persistent memory: u_i0, u_i1, pebs, t and cpu_start.
+For the run_cpu function, the u_i0, u_i1, pebs arrays are placed in persistent memory to ensure that
+these values are regained when the process is restarted. The t variable keeps a record of the timestep iterations,
+while the cpu_start variable is to keep track of the execution time,and hence also have to be placed in persistent memory.
+
+Solution Implementation:
