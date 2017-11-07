@@ -8,10 +8,42 @@ ndas Neha Das
 ################################################################################
 
 
-What data structures did you have to place in persistent memory?
-We have placed the following data structures in persistent memory: u_i0, u_i1, pebs, t and cpu_start.
-For the run_cpu function, the u_i0, u_i1, pebs arrays are placed in persistent memory to ensure that
-these values are regained when the process is restarted. The t variable keeps a record of the timestep iterations,
-while the cpu_start variable is to keep track of the execution time,and hence also have to be placed in persistent memory.
+Problem Objective:
+Commands to install:
+Please refer to homework description.
+
 
 Solution Implementation:
+
+What data structures did you have to place in persistent memory?
+
+
+We have placed the following data structures in persistent memory: u_i0, u_i1, pebs, t and cpu_start.
+For the run_cpu function, the u_i0, u_i1, pebs arrays are placed in persistent memory to ensure that
+these values are regained when the process is restarted. The t variable is made global since it keeps a record of the timestep iterations,
+while the cpu_start variable is to keep track of the execution time,and hence also have to be placed in persistent memory.
+
+Other aspects of your solution
+
+1. Persistent memory initialization before malloc: Memory allocation of persistent variables followed flush and backup.
+mflush() flushes in-core data to memory-mapped file and backup() backs up globals and heap to a separate file.
+2. For the first time the program is run, persistent memory variables are initialized and memory is allocated to them.
+All the init functions ( pebbles, u0, u1) are called only when the argument is not -r.
+3. The next time the program is run with the argument -r, the restore() function restores the persistent variables
+to their last known check-pointed state.
+4. In the run_cpu() function, when the program is run without -r, we initialize t to 0 and call mflush() on the variable to set
+the value of t.
+5. We copy back the values of uc and un to u0 and u1 respectively. This is because every time the program is interrupted and we restart the program again, u0 and u1 values should be the latest check-pointed values and not the initial values.
+This is done via 2 memcpy() calls.
+memcpy(u0, uc, sizeof(double) * n * n);
+memcpy(u1, un, sizeof(double) * n * n);
+6. At the end we free all the persistent memory allocations.
+
+Results:
+
+In the previous question (P2) we saw an execution time of around 40 seconds without any interruption. After we added the checkpoint mechanism with PERM, the execution time increases when we interrupt the running program. This is because, the checkpoint iteration picks up where it
+left off in the previous iteration and the start and end times are gettimeofday() functions which give the cumulative time of the entire program run (from the time the program was first started to the last iteration of the program)
+
+What we have learnt:
+
+Using persistent memory of allocation as a means of checkpoint-restore mechanism.
